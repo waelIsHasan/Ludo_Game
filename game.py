@@ -1,6 +1,7 @@
 import random
 from typing import List, Dict, Optional
 from board import Board
+from ai import AI
 
 class LudoGame:
     def __init__(self):
@@ -108,33 +109,8 @@ class LudoGame:
         if not valid_moves:
             print(f"No valid moves for {player}")
             return False
-            
-        # Simple AI: Prioritize moving tokens that are:
-        # 1. In yard when rolling 6
-        # 2. Close to entering home run
-        # 3. Already on the board
-        for i in valid_moves:
-            pos = self.board.tokens[player][i]
-            if pos == -1 and dice_roll == 6:
-                self.move_token(player, i, dice_roll)
-                return True
-                
-        # Try to move token closest to home run
-        best_move = valid_moves[0]
-        max_progress = -1
-        for i in valid_moves:
-            pos = self.board.tokens[player][i]
-            if isinstance(pos, tuple):  # Already in home run
-                progress = 52 + pos[1]
-            elif pos != -1:  # On main track
-                if player == 'Red':
-                    progress = pos if pos <= 51 else pos - 52
-                else:
-                    progress = pos if pos <= 25 else pos - 52
-                if progress > max_progress:
-                    max_progress = progress
-                    best_move = i
-                    
+        
+        best_move = AI.simple_ai(game=self, valid_moves = valid_moves, player=player, dice_roll=dice_roll)           
         self.move_token(player, best_move, dice_roll)
         return True
 
