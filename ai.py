@@ -33,3 +33,39 @@ class AI:
                     max_progress = progress
                     best_move = i
         return best_move            
+
+
+    @staticmethod
+    def expectimax(board, dice_roll, depth, is_maximizing_player, is_chance_node,players):
+        if depth == 0 or board.check_winner(players) is not None:  # Terminal condition
+            return board.evaluate(), board
+
+        if is_chance_node:  # Chance node: Expectation over dice rolls
+            expected_value = 0
+            possible_dice_rolls = range(1, 7)  # Standard dice: rolls from 1 to 6
+            for roll in possible_dice_rolls:
+                probability = 1 / len(possible_dice_rolls)  # Uniform probability
+                for new_board in board.get_possible_boards('Blue' if is_maximizing_player else 'Red', roll):
+                    eval, _ = AI.expectimax(board, roll, depth - 1, is_maximizing_player, False,players)
+                    expected_value += probability * eval
+            return expected_value, None
+
+        if is_maximizing_player:  # Maximizing player's turn
+            max_eval = float('-inf')
+            best_move = None
+            for new_board in board.get_possible_boards('Blue', dice_roll):  
+                eval, _ = AI.expectimax(board, dice_roll, depth - 1, False, True,players)
+                if eval > max_eval:
+                    max_eval = eval
+                    best_move = new_board
+            return max_eval, best_move
+
+        else:  # Minimizing player's turn
+            min_eval = float('inf')
+            best_move = None
+            for new_board in board.get_possible_boards('Red', dice_roll):
+                eval, _ = AI.expectimax(board, dice_roll, depth - 1, True, True,players)
+                if eval < min_eval:
+                    min_eval = eval
+                    best_move = new_board
+            return min_eval, best_move
