@@ -27,6 +27,21 @@ class LudoGame:
         # Calculate new position on main track
         new_pos = (current_pos + steps) % 52
         
+        opponent = "Red"
+        if player == "Red":
+            opponent = "Blue"
+        
+        # Get positions where opponent has walls
+        opponent_walls = self.board.getWall(player)
+       
+        for wall_pos, count in opponent_walls.items():
+            if count >= 2:  # It's a wall
+                print('opponent-wall' , opponent_walls)
+                # If wall is between current position and new position
+                # and new position is NOT beyond the wall, move is invalid
+                if current_pos < wall_pos < new_pos:
+                    return False
+
         # Check if token should enter home run
         if player == 'Red' and current_pos <= 51 and current_pos + steps > 51:
             home_run_steps = (current_pos + steps) - 51 - 1
@@ -34,15 +49,16 @@ class LudoGame:
         elif player == 'Blue' and current_pos <= 25 and current_pos + steps > 25:
             home_run_steps = (current_pos + steps) - 25 - 1
             return home_run_steps < 6
-            
         return True
 
     def move_token(self, player: str, token_index: int, steps: int) -> bool:
         if not self.is_valid_move(player, token_index, steps):
             return False
-            
-        current_pos = self.board.tokens[player][token_index]
+       
+        print("player" , player , "token_index :" , token_index)
         
+        current_pos = self.board.tokens[player][token_index]
+        self.board.getWall(player)
         # Moving from yard to start position
         if current_pos == -1:
             if steps == 6:
@@ -69,7 +85,8 @@ class LudoGame:
         
         # Calculate new position
         new_pos = (current_pos + steps) % 52
-        
+    
+                    
         # Check if token should enter home run
         if (player == 'Red' and current_pos <= 51 and current_pos + steps > 51) or \
            (player == 'Blue' and current_pos <= 25 and current_pos + steps > 25):
@@ -80,13 +97,14 @@ class LudoGame:
                 self.board.tokens[player][token_index] = (player, home_run_steps)
                 return True
             return False
-            
+        
         # Handle capture
         if self.board.board[new_pos] is not None and \
            self.board.board[new_pos] != player and \
            new_pos not in self.board.safe_positions['main'] and \
            new_pos != self.board.safe_positions[self.board.board[new_pos]]:
             self.board.send_token_home(self.board.board[new_pos], new_pos)
+           
             
         # Update board and token position
         self.board.board[new_pos] = player
@@ -100,8 +118,7 @@ class LudoGame:
                 valid_moves.append(i)
         return valid_moves
 
-    def play_turn(self, player: str) -> bool:
-        dice_roll = self.roll_dice()
+    def play_turn(self, player: str ,  dice_roll : int) -> bool:
         print(f"\n{player} rolled a {dice_roll}")
         
         valid_moves = self.get_valid_moves(player, dice_roll)
@@ -129,10 +146,12 @@ class LudoGame:
         while True:
             current_player = self.players[turn % 2]
             self.board.display_board()
-            self.play_turn(current_player)
-            
+            dice_roll = self.roll_dice()
+            self.play_turn(current_player , dice_roll)
+            if dice_roll != 6:
+                turn +=1
             winner = self.check_winner()
             if winner:
                 print(f"\n{winner} wins the game!")
-                break 
-            turn += 1
+                break
+            

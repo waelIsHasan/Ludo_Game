@@ -42,3 +42,29 @@ class Board:
         for player in ['Red', 'Blue']:
             print(f"{player} tokens:", self.tokens[player])
             print(f"{player} home run:", self.home_runs[player])
+        
+    def getWall(self , player):
+        """
+        1.gets the possible walls for Player
+             
+        """
+        opponent_walls = {}
+        for i, pos in enumerate(self.board.tokens[opponent]):
+            if isinstance(pos, int) and pos >= 0:  # Only consider tokens on main track
+                if pos in opponent_walls:
+                    opponent_walls[pos] += 1
+                else:
+                    opponent_walls[pos] = 1
+        return opponent_walls
+                
+                    
+                
+                
+                       
+
+
+        
+    
+            
+        
+        

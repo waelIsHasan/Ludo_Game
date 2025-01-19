@@ -16,7 +16,7 @@ class AI:
             pos = game.board.tokens[player][i]
             if pos == -1 and dice_roll == 6:
                 return i
-                
+            
         # Try to move token closest to home run
         best_move = valid_moves[0]
         max_progress = -1
@@ -32,4 +32,5 @@ class AI:
                 if progress > max_progress:
                     max_progress = progress
                     best_move = i
-        return best_move            
+        return best_move
+
