@@ -49,7 +49,7 @@ class Board:
              
         """
         opponent_walls = {}
-        for i, pos in enumerate(self.board.tokens[opponent]):
+        for i, pos in enumerate(self.tokens[player]):
             if isinstance(pos, int) and pos >= 0:  # Only consider tokens on main track
                 if pos in opponent_walls:
                     opponent_walls[pos] += 1

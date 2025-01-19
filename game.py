@@ -30,9 +30,9 @@ class LudoGame:
         opponent = "Red"
         if player == "Red":
             opponent = "Blue"
-        
+            
         # Get positions where opponent has walls
-        opponent_walls = self.board.getWall(player)
+        opponent_walls = self.board.getWall(opponent)
        
         for wall_pos, count in opponent_walls.items():
             if count >= 2:  # It's a wall
