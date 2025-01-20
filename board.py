@@ -41,9 +41,8 @@ class Board:
     def move_token(self, player: str, token_index: int, steps: int) -> bool:
         if not self.is_valid_move(player, token_index, steps):
             return False
-            
-        current_pos = self.tokens[player][token_index]
         
+        current_pos = self.tokens[player][token_index]
         # Moving from yard to start position
         if current_pos == -1:
             if steps == 6:
@@ -70,7 +69,8 @@ class Board:
         
         # Calculate new position
         new_pos = (current_pos + steps) % 52
-        
+    
+                    
         # Check if token should enter home run
         if (player == 'Red' and current_pos <= 51 and current_pos + steps > 51) or \
            (player == 'Blue' and current_pos <= 25 and current_pos + steps > 25):
@@ -81,7 +81,7 @@ class Board:
                 self.tokens[player][token_index] = (player, home_run_steps)
                 return True
             return False
-            
+        
         # Handle capture
         if self.board[new_pos] is not None and \
            self.board[new_pos] != player and \
@@ -110,6 +110,20 @@ class Board:
         # Calculate new position on main track
         new_pos = (current_pos + steps) % 52
         
+        opponent = "Red"
+        if player == "Red":
+            opponent = "Blue"
+
+        # Get positions where opponent has walls
+        opponent_walls = self.getWall(opponent)
+        for wall_pos, count in opponent_walls.items():
+            if count >= 2:  # It's a wall
+                print('opponent-wall' , opponent_walls)
+                # If wall is between current position and new position
+                # and new position is NOT beyond the wall, move is invalid
+                if current_pos < wall_pos < new_pos:
+                    return False
+
         # Check if token should enter home run
         if player == 'Red' and current_pos <= 51 and current_pos + steps > 51:
             home_run_steps = (current_pos + steps) - 51 - 1
@@ -117,7 +131,6 @@ class Board:
         elif player == 'Blue' and current_pos <= 25 and current_pos + steps > 25:
             home_run_steps = (current_pos + steps) - 25 - 1
             return home_run_steps < 6
-            
         return True
     
     def get_valid_moves(self, player: str, dice_roll: int) -> List[int]:
@@ -168,4 +181,15 @@ class Board:
             print(f"{player} home run:", self.home_runs[player])
         print(self.evaluate())
 
-    
+    def getWall(self , player):
+        """
+        1.gets the possible walls for Player               
+        """
+        walls = {}
+        for pos in self.tokens[player]:
+            if isinstance(pos, int) and pos >= 0:  # Only consider tokens on main track
+                if pos in walls.keys():
+                    walls[pos] += 1
+                else:
+                    walls[pos] = 1
+        return walls

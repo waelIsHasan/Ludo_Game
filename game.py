@@ -12,8 +12,7 @@ class LudoGame:
     def roll_dice(self) -> int:
         return random.randint(1, 6)
   
-    def play_turn(self, player: str) -> bool:
-        dice_roll = self.roll_dice()
+    def play_turn(self, player: str,dice_roll) -> bool:
         print(f"\n{player} rolled a {dice_roll}")
         
         valid_moves = self.board.get_valid_moves(player, dice_roll)
@@ -27,10 +26,11 @@ class LudoGame:
             best_move = AI.expectimax(self.board, dice_roll, 1, True, False,self.players)
 
         boards = self.board.get_possible_boards(player,dice_roll)
-        print('posssible boards:')
-        for board in boards:
-            board.display_board()
-            
+        print('---------------------\nposssible boards:')
+        for i in range(len(boards)):
+            print (f'* possible board {i + 1} :')
+            boards[i].display_board()
+        print ('------------------------')
         _,self.board= best_move
         # move = AI.simple_ai(self,valid_moves,player,dice_roll)
 
@@ -42,10 +42,11 @@ class LudoGame:
         while True:
             current_player = self.players[turn % 2]
             self.board.display_board()
-            self.play_turn(current_player)
-            
+            dice_roll = self.roll_dice()
+            self.play_turn(current_player , dice_roll)
+            if dice_roll != 6:
+                turn +=1
             winner = self.board.check_winner(self.players)
             if winner:
                 print(f"\n{winner} wins the game!")
-                break 
-            turn += 1
+                break

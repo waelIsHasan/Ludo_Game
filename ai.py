@@ -37,6 +37,43 @@ class AI:
 
     @staticmethod
     def expectimax(board, dice_roll, depth, is_maximizing_player, is_chance_node,players):
+        """
+        Implements the Expectimax algorithm
+
+        Parameters:
+        ----------
+        board : Board
+            The current state of the game represented as a Board object.
+        dice_roll : int
+            The result of the dice roll for the current turn (1-6).
+        depth : int
+            The depth of the search tree. When depth reaches 0, the algorithm evaluates the board.
+        is_maximizing_player : bool
+            True if the current player is the maximizing player; False otherwise.
+        is_chance_node : bool
+            True if the current node represents a chance event (e.g., rolling a dice).
+        players : list
+            A list of players in the game, typically containing identifiers for each player (e.g., 'Blue' and 'Red').
+
+        Returns:
+        -------
+        tuple
+            A tuple containing:
+            - float: The evaluated score of the board state based on the game's evaluation function.
+            - Board or None: The best move as a Board object for the current player, or None if the node is a chance node.
+
+        Notes:
+        -----
+        - If the depth reaches 0 or there is a terminal state (a winner is determined), the method returns the evaluated score.
+        - The algorithm distinguishes between three types of nodes:
+            1. Chance nodes: Evaluate the expected value based on possible dice rolls.
+            2. Maximizing nodes: The AI chooses the best move to maximize the score.
+            3. Minimizing nodes: The opponent chooses the move to minimize the score.
+
+        Example:
+        --------
+        result, best_move = AI.expectimax(current_board, 4, 3, True, False, ['Blue', 'Red'])
+        """
         if depth == 0 or board.check_winner(players) is not None:  # Terminal condition
             return board.evaluate(), board
 
