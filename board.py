@@ -179,3 +179,17 @@ class Board:
         for player in ['Red', 'Blue']:
             print(f"{player} tokens:", self.tokens[player])
             print(f"{player} home run:", self.home_runs[player])
+        print(self.evaluate())
+
+    def getWall(self , player):
+        """
+        1.gets the possible walls for Player               
+        """
+        walls = {}
+        for pos in self.tokens[player]:
+            if isinstance(pos, int) and pos >= 0:  # Only consider tokens on main track
+                if pos in walls.keys():
+                    walls[pos] += 1
+                else:
+                    walls[pos] = 1
+        return walls
